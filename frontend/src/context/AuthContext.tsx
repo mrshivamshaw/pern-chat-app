@@ -19,7 +19,7 @@ const AuthContext = createContext<{
     isLoading : true
 })
 
-export const useAuth = () => {
+export const useAuthContext  = () => {
     return useContext(AuthContext)
 
 }
@@ -31,12 +31,13 @@ export const AuthContextProvider =  ({children}: {children: ReactNode}) => {
     useEffect(() => {
         const getUserData = async()=>{
             try {
-                const res = await axios.get('http://localhost:3000/api/auth/user')
-                if(!res.data.success){
+                const res = await axios.get('/api/auth/user')
+                if(!res?.data?.success){
                   console.log(res.data.message);
-                    setAuthUser(null)
+                  setAuthUser(null)
                 }
-                setAuthUser(res.data.user)
+                setAuthUser(res?.data?.user)
+                
             } catch (error) {
                 console.log(error);
             }finally{

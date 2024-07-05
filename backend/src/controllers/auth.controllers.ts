@@ -13,7 +13,7 @@ export const singin = async(req: Request, res : Response) => {
                 success : false
             })
         }
-        console.log(username);
+        // console.log(username);
         
         const existinguser = await prisma.user.findUnique({
             where: {
@@ -60,7 +60,7 @@ export const singin = async(req: Request, res : Response) => {
             return res.status(200).json({
                 message : "User created successfully",
                 success : true,
-                data : user
+                user : user
             })
         }else{
             return res.status(400).json({
@@ -117,7 +117,7 @@ export const login = async(req: Request, res: Response) => {
         return res.status(200).json({
             message : "Login successful",   
             success : true,
-            data : user
+            user : user
         })
 
     } catch (error : any) {
@@ -133,10 +133,10 @@ export const login = async(req: Request, res: Response) => {
 export const logout = async (req: Request, res: Response) => {
 	try {
 		res.cookie("jwt", "", { maxAge: 0 });
-		res.status(200).json({ message: "Logged out successfully" });
+		res.status(200).json({ message: "Logged out successfully", success : true });
 	} catch (error: any) {
 		console.log("Error in logout controller", error.message);
-		res.status(500).json({ error: "Internal Server Error" });
+		res.status(500).json({ messsage: error.message,success : false });
 	}
 };
 
@@ -148,13 +148,11 @@ export const getMe = async (req: Request, res: Response) => {
 		if (!user) {
 			return res.status(404).json({ error: "User not found" });
 		}
-
-		res.status(200).json({
-			id: user.id,
-			firstname: user.firstname,
-			lastname: user.lastname,
-			username: user.username,
-			profilePic: user.profilepic,
+        user.password = "";
+		return res.status(200).json({
+            user: user,
+            success : true,
+            message : "User found"
 		});
 	} catch (error: any) {
 		console.log("Error in getMe controller", error.message);

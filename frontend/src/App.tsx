@@ -2,11 +2,12 @@ import { Route, Routes } from "react-router-dom"
 import Home from "./pages/Home"
 import Login from "./pages/Login"
 import SignUp from "./pages/SignUp"
-import { useAuth } from "./assets/AuthContext";
+import { useAuthContext } from "./context/AuthContext";
+import { Toaster } from "react-hot-toast";
 
 function App() {
-  const {authUser,setAuthUser, isLoading} = useAuth();
-
+  const {authUser, isLoading} = useAuthContext();
+  
   if(isLoading) return null;
 
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="login" element={!authUser ? <Login/> : <Home/>}/>
         <Route path="signup" element={!authUser ? <SignUp/> : <Home/>}/>
       </Routes>
+      <Toaster/>
     </div>
   )
 }

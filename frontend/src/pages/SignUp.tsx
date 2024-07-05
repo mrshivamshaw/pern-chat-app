@@ -1,7 +1,49 @@
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import GenderCheckbox from "../components/GenderCheckbox";
+import { useState } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useAuthContext } from "../context/AuthContext";
 
 const SignUp = () => {
+	const [inputs, setInputs] = useState({
+		username : "",
+		firstname : "",
+		lastname : "",
+		password : "",
+		confirmPassword : "",
+		gender : ""
+	});
+	const navigate = useNavigate();
+	const {setAuthUser, authUser} = useAuthContext()
+
+	const formSubmitHamdler = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		const toastId = toast.loading("Signing up...");
+		try {
+			const res = await axios.post("/api/auth/signin",inputs);
+			if(!res?.data?.success){
+				setInputs({ ...inputs, password : "", confirmPassword : "" })
+				toast.dismiss(toastId)
+				toast.error(res?.data?.message)
+				return
+			}
+			toast.dismiss(toastId)
+			toast.success(res?.data?.message)
+			setInputs({ ...inputs, password : "", confirmPassword : "" })
+			setAuthUser(res?.data?.user);
+			navigate("/");
+		} catch (error) {
+			console.log(error);
+			toast.dismiss(toastId)
+			toast.error("Something went wrong")
+		}
+	};
+
+	const handleCheckBoxChange = (gender: string) => {
+		setInputs({ ...inputs, gender })
+	}
+
 	return (
 		<div className='flex flex-col items-center justify-center min-w-96 mx-auto'>
 			<div className='w-full p-6 rounded-lg shadow-md bg-gray-400 bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-0'>
@@ -9,19 +51,25 @@ const SignUp = () => {
 					Sign Up <span className='text-blue-500'> ChatApp</span>
 				</h1>
 
-				<form>
+				<form onSubmit={formSubmitHamdler}>
 					<div>
 						<label className='label p-2'>
-							<span className='text-base label-text'>Full Name</span>
+							<span className='text-base label-text'>First Name</span>
 						</label>
-						<input type='text' placeholder='John Doe' className='w-full input input-bordered  h-10' />
+						<input value={inputs.firstname} onChange={(e) => setInputs({ ...inputs, firstname : e.target.value })} type='text' placeholder='John' className='w-full input input-bordered  h-10' />
+					</div>
+					<div>
+						<label className='label p-2'>
+							<span className='text-base label-text'>Last Name</span>
+						</label>
+						<input value={inputs.lastname} onChange={(e) => setInputs({ ...inputs, lastname : e.target.value })} type='text' placeholder='Doe' className='w-full input input-bordered  h-10' />
 					</div>
 
 					<div>
 						<label className='label p-2 '>
 							<span className='text-base label-text'>Username</span>
 						</label>
-						<input type='text' placeholder='johndoe' className='w-full input input-bordered h-10' />
+						<input value={inputs.username} onChange={(e) => setInputs({ ...inputs, username : e.target.value })} type='text' placeholder='johndoe' className='w-full input input-bordered h-10' />
 					</div>
 
 					<div>
@@ -32,6 +80,8 @@ const SignUp = () => {
 							type='password'
 							placeholder='Enter Password'
 							className='w-full input input-bordered h-10'
+							value={inputs.password} 
+							onChange={(e) => setInputs({ ...inputs, password : e.target.value })}
 						/>
 					</div>
 
@@ -43,10 +93,12 @@ const SignUp = () => {
 							type='password'
 							placeholder='Confirm Password'
 							className='w-full input input-bordered h-10'
+							value={inputs.confirmPassword}
+							onChange={(e) => setInputs({ ...inputs, confirmPassword : e.target.value })}
 						/>
 					</div>
 
-					<GenderCheckbox />
+					<GenderCheckbox onChangeCheckBox={handleCheckBoxChange} selectGender = {inputs.gender}/>
 
 					<Link
 						to={"/login"}
