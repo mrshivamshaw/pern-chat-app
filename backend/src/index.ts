@@ -4,9 +4,9 @@ import messageRoute from "./routes/message.route";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from 'cors'
+import { app, server } from "./socket/socket";
 dotenv.config();
 
-const app = express();
 const port = process.env.PORT || 3001;
 app.use(cors(
     {
@@ -24,7 +24,7 @@ app.get("/", (req, res) => {
     res.send("Hello World!");
 });
 
-app.listen(port, () => {
+server.listen(port, () => {
     console.log("Server started on port ",port);
     
 })

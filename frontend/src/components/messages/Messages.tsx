@@ -1,5 +1,6 @@
 import useChatScroll from "../../hook/useChatScroll";
 import useGetMessages from "../../hook/useGetMessages";
+import useListenMessages from "../../hook/useListenMessages";
 import useConversationStore from "../../zustand/useConversation";
 import Message from "./Message";
 
@@ -7,6 +8,7 @@ const Messages = () => {
 	const {loading} = useGetMessages();
 	const {messages} = useConversationStore();
 	const ref = useChatScroll(messages) as React.MutableRefObject<HTMLDivElement>;
+	useListenMessages();
 	return (
 		<div className='px-4 flex-1 overflow-auto' ref={ref}>
 			{ messages?.map((message) => (
