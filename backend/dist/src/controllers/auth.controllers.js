@@ -1,13 +1,7 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getMe = exports.logout = exports.login = exports.singin = void 0;
-const prisma_1 = require("../db/prisma");
-const bcrypt_1 = __importDefault(require("bcrypt"));
-const generateToken_1 = __importDefault(require("../utils/generateToken"));
-const singin = async (req, res) => {
+import { prisma } from "../db/prisma.js";
+import bcrypt from "bcrypt";
+import gnerateToken from "../utils/generateToken.js";
+export const singin = async (req, res) => {
     try {
         const { username, password, confirmPassword, firstname, lastname, gender } = req.body;
         if (!username || !password || !confirmPassword || !firstname || !lastname || !gender) {
@@ -17,7 +11,7 @@ const singin = async (req, res) => {
             });
         }
         // console.log(username);
-        const existinguser = await prisma_1.prisma.user.findUnique({
+        const existinguser = await prisma.user.findUnique({
             where: {
                 username
             }
@@ -34,11 +28,11 @@ const singin = async (req, res) => {
                 success: false
             });
         }
-        const salt = await bcrypt_1.default.genSalt(10);
-        const hashedpassword = await bcrypt_1.default.hash(password, salt);
+        const salt = await bcrypt.genSalt(10);
+        const hashedpassword = await bcrypt.hash(password, salt);
         const boypic = `https://avatar.iran.liara.run/public/boy?username=${username}`;
         const girlpic = `https://avatar.iran.liara.run/public/girl?username=${username}`;
-        const user = await prisma_1.prisma.user.create({
+        const user = await prisma.user.create({
             data: {
                 username,
                 password: hashedpassword,
@@ -51,7 +45,7 @@ const singin = async (req, res) => {
         user.password = "";
         if (user) {
             //generate token
-            (0, generateToken_1.default)(user.id, res);
+            gnerateToken(user.id, res);
             return res.status(200).json({
                 message: "User created successfully",
                 success: true,
@@ -73,8 +67,7 @@ const singin = async (req, res) => {
         });
     }
 };
-exports.singin = singin;
-const login = async (req, res) => {
+export const login = async (req, res) => {
     try {
         const { username, password } = req.body;
         if (!username || !password) {
@@ -83,7 +76,7 @@ const login = async (req, res) => {
                 success: false
             });
         }
-        const user = await prisma_1.prisma.user.findUnique({
+        const user = await prisma.user.findUnique({
             where: {
                 username: username
             }
@@ -94,7 +87,7 @@ const login = async (req, res) => {
                 success: false
             });
         }
-        const isMatch = await bcrypt_1.default.compare(password, user.password);
+        const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(400).json({
                 message: "Invalid credentials",
@@ -103,7 +96,7 @@ const login = async (req, res) => {
         }
         user.password = "";
         //generate token
-        (0, generateToken_1.default)(user.id, res);
+        gnerateToken(user.id, res);
         return res.status(200).json({
             message: "Login successful",
             success: true,
@@ -118,8 +111,7 @@ const login = async (req, res) => {
         });
     }
 };
-exports.login = login;
-const logout = async (req, res) => {
+export const logout = async (req, res) => {
     try {
         res.cookie("jwt", "", { maxAge: 0 });
         res.status(200).json({ message: "Logged out successfully", success: true });
@@ -129,10 +121,9 @@ const logout = async (req, res) => {
         res.status(500).json({ messsage: error.message, success: false });
     }
 };
-exports.logout = logout;
-const getMe = async (req, res) => {
+export const getMe = async (req, res) => {
     try {
-        const user = await prisma_1.prisma.user.findUnique({ where: { id: req.user.id } });
+        const user = await prisma.user.findUnique({ where: { id: req.user.id } });
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
@@ -148,4 +139,3 @@ const getMe = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
-exports.getMe = getMe;

@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { protectroute } from "../middleware/protectroute";
-import { getMessages, getUserForChat, sendMessage } from "../controllers/message.controllers";
+import { protectroute } from "../middleware/protectroute.ts";
+import { getMessages, getUserForChat, sendMessage } from "../controllers/message.controllers.ts";
 
 
 const messageRoute = Router();

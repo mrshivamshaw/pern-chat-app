@@ -1,15 +1,13 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = require("express");
-const auth_controllers_1 = require("../controllers/auth.controllers");
-const protectroute_1 = require("../middleware/protectroute");
-const authRoute = (0, express_1.Router)();
+import { Router } from "express";
+import { getMe, login, logout, singin } from "../controllers/auth.controllers.js";
+import { protectroute } from "../middleware/protectroute.js";
+const authRoute = Router();
 // login route
-authRoute.post("/login", auth_controllers_1.login);
+authRoute.post("/login", login);
 // logout route
-authRoute.get("/logout", auth_controllers_1.logout);
+authRoute.get("/logout", logout);
 //signup route
-authRoute.post("/signin", auth_controllers_1.singin);
+authRoute.post("/signin", singin);
 //get user route
-authRoute.get("/user", protectroute_1.protectroute, auth_controllers_1.getMe);
-exports.default = authRoute;
+authRoute.get("/user", protectroute, getMe);
+export default authRoute;

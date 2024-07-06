@@ -1,12 +1,6 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.protectroute = void 0;
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const prisma_1 = require("../db/prisma");
-const protectroute = async (req, res, next) => {
+import jwt from "jsonwebtoken";
+import { prisma } from "../db/prisma.js";
+export const protectroute = async (req, res, next) => {
     try {
         const token = req.cookies.jwt;
         // console.log(token);
@@ -16,7 +10,7 @@ const protectroute = async (req, res, next) => {
                 success: false
             });
         }
-        const decode = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
+        const decode = jwt.verify(token, process.env.JWT_SECRET);
         if (!decode) {
             return res.status(401).json({
                 message: "Unauthorized - Invalid token",
@@ -24,7 +18,7 @@ const protectroute = async (req, res, next) => {
             });
         }
         // console.log(decode);
-        const user = await prisma_1.prisma.user.findUnique({
+        const user = await prisma.user.findUnique({
             where: {
                 id: decode.userId
             },
@@ -49,4 +43,3 @@ const protectroute = async (req, res, next) => {
     catch (error) {
     }
 };
-exports.protectroute = protectroute;
