@@ -1,9 +1,14 @@
+import { useAuthContext } from "../../context/AuthContext";
+import useConversationStore from "../../zustand/useConversation";
+
 const Message = ({ message }: { message?: any }) => {
-	const fromMe = message.fromMe;
+	const {selectedConversation} = useConversationStore();
+	const {authUser} = useAuthContext();
+	const fromMe = message?.senderid === authUser?.id;
 	const chatClass = fromMe ? "chat-end" : "chat-start";
 	const img = fromMe
-		? "https://avatar.iran.liara.run/public/boy?username=johndoe"
-		: "https://avatar.iran.liara.run/public/boy?username=janedoe";
+		? authUser?.profilepic 
+		: selectedConversation?.profilepic
 
 	const bubbleBg = fromMe ? "bg-blue-500" : "";
 	return (

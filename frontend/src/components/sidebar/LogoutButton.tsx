@@ -3,10 +3,12 @@ import { LogOut } from "lucide-react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
+import useConversationStore from "../../zustand/useConversation";
 
 const LogoutButton = () => {
 	const navigate = useNavigate();
 	const {setAuthUser} = useAuthContext();
+	const {setMessages, setSelectedConversation} = useConversationStore()
 	const logout = async() => {
 		try {
 			const res = await axios.get("/api/auth/logout")
@@ -16,6 +18,8 @@ const LogoutButton = () => {
 			}
 			toast.success(res?.data?.message);
 			setAuthUser(null);
+			setMessages([]);
+			setSelectedConversation(null);
 			navigate("/login");
 		} catch (error) {
 			

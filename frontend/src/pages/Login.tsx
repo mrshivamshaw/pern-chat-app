@@ -13,17 +13,22 @@ const Login = () => {
 	const {setAuthUser} = useAuthContext();
 	const loginFormHandler = async(e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		const toastId = toast.loading("Logging in...");
 		try {
 			const res = await axios.post("/api/auth/login", inputs);
 			if(!res?.data?.success){
 				setInputs({ ...inputs, password : "" })
+				toast.dismiss(toastId)
 				toast.error(res?.data?.message)
+				return
 			}
+			toast.dismiss(toastId)
 			toast.success(res?.data?.message)
 			setInputs({ ...inputs, password : "" })
 			setAuthUser(res?.data?.user);
 			navigate("/");
 		} catch (error: any) {
+			toast.dismiss(toastId)
 			toast.error(error?.response?.data?.message)
 			console.log(error?.response?.data?.message);
 			

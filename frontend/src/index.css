@@ -15,20 +15,20 @@ body {
 
 /* dark mode looking scrollbar */
 ::-webkit-scrollbar {
-	width: 8px;
+	width: 1px;
 }
 
 ::-webkit-scrollbar-track {
-	background: #555;
+	background: #000;
 }
 
 ::-webkit-scrollbar-thumb {
-	background: #121212;
+	background: #000;
 	border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-	background: #242424;
+	background: #000;
 }
 
 .shake {

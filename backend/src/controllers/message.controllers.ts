@@ -68,27 +68,25 @@ export const getMessages = async(req : Request, res : Response) => {
         if(!uerToChat || !userId){  
             return res.status(400).json({message : "All fields are required", success : false});
         }
-
-        const conversation = await prisma.conversations.findFirst({
+        // console.log(uerToChat, userId);
+        
+        const conversation = await prisma.conversations.findMany({
             where : {
-                participantsid:{
+                participantsid : {
                     hasEvery : [userId, uerToChat]
-                },
-            },
-            include: {
-                messages:{
-                    orderBy: {
-                        createdat: "asc"
-                    }
                 }
+            },
+            include : {
+                messages : true
             }
-        })
+        })  
+        
 
         if(!conversation){
             return res.status(404).json({message : "Conversation not found", success : false});
         }
 
-        return res.status(200).json({message : "Conversation found", success : true, data : conversation});
+        return res.status(200).json({message : "Conversation found", success : true, messages : conversation[0]?.messages});
         
     } catch (error: any) {
         console.log("Catch Error in getMessages controller", error);
