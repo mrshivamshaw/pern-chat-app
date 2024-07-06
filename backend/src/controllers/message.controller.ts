@@ -46,6 +46,9 @@ export const sendMessage = async (req: Request, res: Response) => {
 							id: newMessage.id,
 						},
 					},
+					messageIds: {
+						push: newMessage.id,
+					}
 				},
 			});
 		}
@@ -57,10 +60,14 @@ export const sendMessage = async (req: Request, res: Response) => {
 			io.to(receiverSocketId).emit("newMessage", newMessage);
 		}
 
-		res.status(201).json(newMessage);
+		return res.status(201).json({
+			message: "Message sent successfully",
+			success: true,
+			newMessage: newMessage
+		,});
 	} catch (error: any) {
 		console.error("Error in sendMessage: ", error.message);
-		res.status(500).json({ error: "Internal server error" });
+		return res.status(500).json({ message: error.message, success: false });
 	}
 };
 
@@ -85,13 +92,21 @@ export const getMessages = async (req: Request, res: Response) => {
 		});
 
 		if (!conversation) {
-			return res.status(200).json([]);
+			return res.status(200).json({
+				message: "No conversation found",
+				success: false,
+				conversation: [],
+			});
 		}
 
-		res.status(200).json(conversation.messages);
+		return res.status(200).json({
+			message: "Conversation found",
+			success: true,
+			conversation: conversation.messages
+		});
 	} catch (error: any) {
 		console.error("Error in getMessages: ", error.message);
-		res.status(500).json({ error: "Internal server error" });
+		return res.status(500).json({ message: error.message, success: false });
 	}
 };
 
@@ -115,6 +130,6 @@ export const getUsersForSidebar = async (req: Request, res: Response) => {
 		res.status(200).json(users);
 	} catch (error: any) {
 		console.error("Error in getUsersForSidebar: ", error.message);
-		res.status(500).json({ error: "Internal server error" });
+		return res.status(500).json({ message: error.message, success: false });
 	}
 };

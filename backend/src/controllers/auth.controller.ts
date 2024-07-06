@@ -8,17 +8,17 @@ export const signup = async (req: Request, res: Response) => {
 		const { fullName, username, password, confirmPassword, gender } = req.body;
 
 		if (!fullName || !username || !password || !confirmPassword || !gender) {
-			return res.status(400).json({ error: "Please fill in all fields" });
+			return res.status(400).json({ message: "Please fill in all fields", success: false });
 		}
 
 		if (password !== confirmPassword) {
-			return res.status(400).json({ error: "Passwords don't match" });
+			return res.status(400).json({ message: "Passwords don't match", success: false });
 		}
 
 		const user = await prisma.user.findUnique({ where: { username } });
 
 		if (user) {
-			return res.status(400).json({ error: "Username already exists" });
+			return res.status(400).json({ message: "Username already exists", success: false });
 		}
 
 		const salt = await bcryptjs.genSalt(10);
@@ -41,19 +41,18 @@ export const signup = async (req: Request, res: Response) => {
 		if (newUser) {
 			// generate token in a sec
 			generateToken(newUser.id, res);
-
+			newUser.password = "";
 			res.status(201).json({
-				id: newUser.id,
-				fullName: newUser.fullName,
-				username: newUser.username,
-				profilePic: newUser.profilePic,
+				message: "User created successfully",
+				success: true,
+				user: newUser,
 			});
 		} else {
-			res.status(400).json({ error: "Invalid user data" });
+			return res.status(400).json({ message: "Invalid user data", success: false });
 		}
 	} catch (error: any) {
 		console.log("Error in signup controller", error.message);
-		res.status(500).json({ error: "Internal Server Error" });
+		res.status(500).json({ message: error.message, success: false });
 	}
 };
 
@@ -63,26 +62,25 @@ export const login = async (req: Request, res: Response) => {
 		const user = await prisma.user.findUnique({ where: { username } });
 
 		if (!user) {
-			return res.status(400).json({ error: "Invalid credentials" });
+			return res.status(400).json({ message: "Invalid credentials", success : false });
 		}
 
 		const isPasswordCorrect = await bcryptjs.compare(password, user.password);
 
 		if (!isPasswordCorrect) {
-			return res.status(400).json({ error: "Invalid credentials" });
+			return res.status(400).json({ message: "Invalid credentials", success : false });
 		}
 
 		generateToken(user.id, res);
-
-		res.status(200).json({
-			id: user.id,
-			fullName: user.fullName,
-			username: user.username,
-			profilePic: user.profilePic,
+		user.password = "";
+		return res.status(200).json({
+			message : "Logged in successfully",
+			success : true,
+			user : user
 		});
 	} catch (error: any) {
 		console.log("Error in login controller", error.message);
-		res.status(500).json({ error: "Internal Server Error" });
+		return res.status(500).json({ message: error.message, success : false });
 	}
 };
 export const logout = async (req: Request, res: Response) => {
@@ -100,17 +98,16 @@ export const getMe = async (req: Request, res: Response) => {
 		const user = await prisma.user.findUnique({ where: { id: req.user.id } });
 
 		if (!user) {
-			return res.status(404).json({ error: "User not found" });
+			return res.status(404).json({ message: "User not found", success: false });
 		}
-
+		user.password = "";
 		res.status(200).json({
-			id: user.id,
-			fullName: user.fullName,
-			username: user.username,
-			profilePic: user.profilePic,
+			message: "User found successfully",
+			success: true,
+			user: user,
 		});
 	} catch (error: any) {
 		console.log("Error in getMe controller", error.message);
-		res.status(500).json({ error: "Internal Server Error" });
+		res.status(500).json({ message: "Internal Server Error", success: false });
 	}
 };
