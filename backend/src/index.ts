@@ -4,10 +4,10 @@ import path from "path";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
-import authRoutes from "./routes/auth.route.ts";
-import messageRoutes from "./routes/message.route.ts";
+import authRoutes from "./routes/auth.route.js";
+import messageRoutes from "./routes/message.route.js";
 import dotenv from "dotenv";
-import { app, server } from "./socket/socket.ts";
+import { app, server } from "./socket/socket.js";
 
 dotenv.config();
 
@@ -23,7 +23,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/message", messageRoutes);
 
 if (process.env.NODE_ENV !== "development") {
-    app.use(express.static(path.join(__dirpath, "/frontend/dist")));
+    app.use(express.static(path.join(__dirpath, "../frontend/dist")));
     app.get("*", (req, res) => {
         res.sendFile(path.join(__dirpath, "frontend", "dist", "index.html"));
     });

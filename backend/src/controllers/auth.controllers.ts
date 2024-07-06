@@ -1,7 +1,7 @@
-import { prisma } from "../db/prisma.ts";
+import { prisma } from "../db/prisma.js";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
-import gnerateToken from "../utils/generateToken.ts";
+import gnerateToken from "../utils/generateToken.js";
 
 export const singin = async(req: Request, res : Response) => {
     try {
