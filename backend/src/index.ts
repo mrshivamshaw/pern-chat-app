@@ -9,6 +9,7 @@ import path from 'path'
 dotenv.config();
 
 const port = process.env.PORT || 3001;
+const __dirname = path.resolve();
 app.use(cors(
     {
         origin : ['http://localhost:5173','http://localhost:3000'],
