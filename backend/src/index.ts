@@ -7,7 +7,7 @@ import cors from 'cors'
 dotenv.config();
 
 const app = express();
-
+const port = process.env.PORT || 3001;
 app.use(cors(
     {
         origin : ['http://localhost:5173','http://localhost:3000'],
@@ -24,7 +24,7 @@ app.get("/", (req, res) => {
     res.send("Hello World!");
 });
 
-app.listen(3000, () => {
-    console.log("Server started on port 3000");
+app.listen(port, () => {
+    console.log("Server started on port ",port);
     
 })
