@@ -3,10 +3,11 @@ import useConversationStore from "../../zustand/useConversation";
 const Conversation = ({ conversation,emoji }: { conversation: ConversationType,emoji: string }) => {
 	const {setSelectedConversation,selectedConversation} = useConversationStore()
 	const isSelected = selectedConversation?.id === conversation.id
+	const isOnline = false
 	return (
 		<>
 			<div className={`flex gap-2 items-center hover:bg-sky-500 rounded p-2 py-1 cursor-pointer ${isSelected?"bg-sky-500":""}`} onClick={() => setSelectedConversation(conversation)}>
-				<div className='avatar online'>
+				<div className={`${isOnline ? "avatar online" : "avatar"}`}>
 					<div className='w-8 md:w-12 rounded-full'>
 						<img src={conversation.profilepic} alt='user avatar' />
 					</div>

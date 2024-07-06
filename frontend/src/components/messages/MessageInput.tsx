@@ -4,7 +4,7 @@ import useSendMessageHook from "../../hook/useSendMessageHook";
 
 const MessageInput = () => {
 	const [message, setMessage] = useState("");
-	const sendMessage = useSendMessageHook()
+	const {sendMessage,loading} = useSendMessageHook()
 	const messageSendHandler = async(e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		// console.log(message);
@@ -24,7 +24,9 @@ const MessageInput = () => {
 					onChange={(e) => setMessage(e.target.value)}
 				/>
 				<button type='submit' className='absolute inset-y-0 end-0 flex items-center pe-3'>
-					<Send className='w-6 h-6 text-white' />
+					{
+						loading ? <span className="loading loading-spinner"/> : <Send className='w-6 h-6 text-white' />
+					}
 				</button>
 			</div>
 		</form>
