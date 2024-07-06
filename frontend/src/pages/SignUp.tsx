@@ -1,4 +1,4 @@
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import GenderCheckbox from "../components/GenderCheckbox";
 import { useState } from "react";
 import axios from "axios";
@@ -15,7 +15,7 @@ const SignUp = () => {
 		gender : ""
 	});
 	const navigate = useNavigate();
-	const {setAuthUser, authUser} = useAuthContext()
+	const {setAuthUser} = useAuthContext()
 
 	const formSubmitHamdler = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();

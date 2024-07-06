@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from 'cors'
 import { app, server } from "./socket/socket";
+import path from 'path'
 dotenv.config();
 
 const port = process.env.PORT || 3001;
@@ -23,6 +24,13 @@ app.use('/api/message',messageRoute);
 app.get("/", (req, res) => {
     res.send("Hello World!");
 });
+
+if (process.env.NODE_ENV !== "development") {
+	app.use(express.static(path.join(__dirname, "/frontend/dist")));
+	app.get("*", (req, res) => {
+		res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"));
+	});
+}
 
 server.listen(port, () => {
     console.log("Server started on port ",port);
