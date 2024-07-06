@@ -1,69 +1,52 @@
-import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { prisma } from "../db/prisma.js";
 
-interface decodedToken extends JwtPayload{
-    userid: string
+import { Request, Response, NextFunction } from "express";
+import prisma from "../db/prisma.js";
+
+interface DecodedToken extends JwtPayload {
+	userId: string;
 }
 
 declare global {
-    namespace Express {
-        interface Request {
-            user : {
-                id : string,
-            }
-        }
-    }
+	namespace Express {
+		export interface Request {
+			user: {
+				id: string;
+			};
+		}
+	}
 }
 
-export const protectroute = async(req: Request, res:Response, next : NextFunction) => {
-    try {
-        const token = req.cookies.jwt;
-        // console.log(token);
-        
-        if(!token){
-            return res.status(401).json({
-                message : "Unauthorized - No token found",
-                success : false
-            })
-        }
+const protectRoute = async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		const token = req.cookies.jwt;
 
-        const decode = jwt.verify(token, process.env.JWT_SECRET!) as decodedToken;
+		if (!token) {
+			return res.status(401).json({ error: "Unauthorized - No token provided" });
+		}
 
-        if(!decode){
-            return res.status(401).json({   
-                message : "Unauthorized - Invalid token",
-                success : false
-            })
-        }
-        // console.log(decode);
-        
-        const user = await prisma.user.findUnique({
-            where : {
-                id : decode.userId
-            },
-            select: {
-                id : true,
-                username : true,
-                profilepic : true,
-                firstname : true,
-                lastname : true
-            }
-        })  
+		const decoded = jwt.verify(token, process.env.JWT_SECRET!) as DecodedToken;
 
-        if(!user){
-            return res.status(401).json({
-                message : "Unauthorized - User not found",
-                success : false
-            })
-        }
-        // console.log(user);
-        
-        req.user = user
+		if (!decoded) {
+			return res.status(401).json({ error: "Unauthorized - Invalid Token" });
+		}
 
-        next()
+		const user = await prisma.user.findUnique({
+			where: { id: decoded.userId },
+			select: { id: true, username: true, fullName: true, profilePic: true },
+		});
 
-    } catch (error) {
-        
-    }
-}
+		if (!user) {
+			return res.status(404).json({ error: "User not found" });
+		}
+
+		req.user = user;
+
+		next();
+	} catch (error: any) {
+		console.log("Error in protectRoute middleware", error.message);
+		res.status(500).json({ error: "Internal Server Error" });
+	}
+};
+
+export default protectRoute;

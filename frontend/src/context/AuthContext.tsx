@@ -1,55 +1,56 @@
-import axios from "axios";
-import { ReactNode, createContext,Dispatch,SetStateAction, useEffect, useState, useContext } from "react";
+import { Dispatch, ReactNode, SetStateAction, createContext, useContext, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
-type authUserType = {
-    id: string,
-    username: string,
-    firstname : string,
-    lastname : string,
-    profilepic : string
-}
+type AuthUserType = {
+	id: string;
+	fullName: string;
+	email: string;
+	profilePic: string;
+	gender: string;
+};
 
 const AuthContext = createContext<{
-    authUser : authUserType | null,
-    setAuthUser : Dispatch<SetStateAction<authUserType | null>>,
-    isLoading : boolean
+	authUser: AuthUserType | null;
+	setAuthUser: Dispatch<SetStateAction<AuthUserType | null>>;
+	isLoading: boolean;
 }>({
-    authUser : null,
-    setAuthUser : () => {},
-    isLoading : true
-})
+	authUser: null,
+	setAuthUser: () => {},
+	isLoading: true,
+});
 
-export const useAuthContext  = () => {
-    return useContext(AuthContext)
+// eslint-disable-next-line react-refresh/only-export-components
+export const useAuthContext = () => {
+	return useContext(AuthContext);
+};
 
-}
+export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
+	const [authUser, setAuthUser] = useState<AuthUserType | null>(null);
+	const [isLoading, setIsLoading] = useState(true);
 
-export const AuthContextProvider =  ({children}: {children: ReactNode}) => {
-    const [authUser, setAuthUser] = useState<authUserType | null>(null)
-    const [isLoading, setIsLoading] = useState<boolean>(true)
+	// logic will go here
+	useEffect(() => {
+		const fetchAuthUser = async () => {
+			try {
+				const res = await fetch("/api/auth/me");
+				const data = await res.json();
+				if (!res.ok) {
+					throw new Error(data.error);
+				}
+				setAuthUser(data);
+			} catch (error: any) {
+				console.error(error);
+				toast.error(error.message);
+			} finally {
+				setIsLoading(false);
+			}
+		};
 
-    useEffect(() => {
-        const getUserData = async()=>{
-            try {
-                const res = await axios.get('/api/auth/user')
-                if(!res?.data?.success){
-                  console.log(res.data.message);
-                  setAuthUser(null)
-                }
-                setAuthUser(res?.data?.user)
-                
-            } catch (error) {
-                console.log(error);
-            }finally{
-                setIsLoading(false)
-            }
-        }
+		fetchAuthUser();
+	}, []);
 
-        getUserData();
-    },[])
-
-    return(
-      <AuthContext.Provider
+	return (
+		<AuthContext.Provider
 			value={{
 				authUser,
 				isLoading,
@@ -58,6 +59,5 @@ export const AuthContextProvider =  ({children}: {children: ReactNode}) => {
 		>
 			{children}
 		</AuthContext.Provider>
-    )
-
-}
+	);
+};

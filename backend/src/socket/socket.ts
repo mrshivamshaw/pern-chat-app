@@ -1,41 +1,39 @@
 import { Server } from "socket.io";
 import http from "http";
-import express  from "express";
+import express from "express";
 
 const app = express();
 
 const server = http.createServer(app);
-const io = new Server(server,{
-    cors: {
-        origin: "http://localhost:5173",
-        methods: ["GET", "POST"],
-    }
+const io = new Server(server, {
+	cors: {
+		origin: ["http://localhost:5173"],
+		methods: ["GET", "POST"],
+	},
 });
 
+export const getReceiverSocketId = (receiverId: string) => {
+	return userSocketMap[receiverId];
+};
 
-export const getReciversSocketId = (reciversId : string) => {
-    return userSocketmap[reciversId];
-}
+const userSocketMap: { [key: string]: string } = {}; // {userId: socketId}
 
+io.on("connection", (socket) => {
+	// console.log("a user connected", socket.id);
 
-const userSocketmap : {[key : string] : string} = {}; //userId : socketId
+	const userId = socket.handshake.query.userId as string;
 
-io.on("connection", socket => {
-    //console.log("a user connected",socket.id);
+	if (userId) userSocketMap[userId] = socket.id;
 
-    const userId = socket.handshake.query.userId as string;
+	// io.emit() is used to send events to all the connected clients
+	io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
-    if(userId) userSocketmap[userId] = socket.id;
+	// socket.on() is used to listen to the events. can be used both on client and server side
+	socket.on("disconnect", () => {
+		// console.log("user disconnected", socket.id);
+		delete userSocketMap[userId];
+		io.emit("getOnlineUsers", Object.keys(userSocketMap));
+	});
+});
 
-    //io.emit is used to send message to all connected users
-    io.emit("getOnlineUsers", Object.keys(userSocketmap))
-
-    //sockect.on is used to listen for events both from client and server
-    socket.on("disconnect",()=>{
-        //console.log("a user disconnected",socket.id);
-        delete userSocketmap[userId];
-        io.emit("getOnlineUsers", Object.keys(userSocketmap))
-    })
-})
-
-export {io,server,app}
+export { app, io, server };

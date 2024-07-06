@@ -1,22 +1,24 @@
-import useChatScroll from "../../hook/useChatScroll";
-import useGetMessages from "../../hook/useGetMessages";
-import useListenMessages from "../../hook/useListenMessages";
-import useConversationStore from "../../zustand/useConversation";
+import useChatScroll from "../../hooks/useChatScroll";
+import useGetMessages from "../../hooks/useGetMessages";
+import useListenMessages from "../../hooks/useListenMessages";
+import MessageSkeleton from "../skeletons/MessageSkeleton";
 import Message from "./Message";
 
 const Messages = () => {
-	const {loading} = useGetMessages();
-	const {messages} = useConversationStore();
-	const ref = useChatScroll(messages) as React.MutableRefObject<HTMLDivElement>;
+	const { loading, messages } = useGetMessages();
 	useListenMessages();
+
+	const ref = useChatScroll(messages) as React.MutableRefObject<HTMLDivElement>;
+
 	return (
 		<div className='px-4 flex-1 overflow-auto' ref={ref}>
-			{ messages?.map((message) => (
-				<Message key={message.id} message={message} />
-			))}
-			{messages.length === 0 && !loading && <div className='w-full h-full text-black/80 text-xl font-semibold flex justify-center items-center'><span>Send the message to start chating</span></div>}
+			{loading && [...Array(3)].map((_, idx) => <MessageSkeleton key={idx} />)}
 
-			{loading ? <div className='w-full h-full text-black/60 text-xl font-semibold flex justify-center items-center'><span className='loading loading-spinner mx-auto'/></div> : null}
+			{!loading && messages.map((message) => <Message key={message.id} message={message} />)}
+
+			{!loading && messages.length === 0 && (
+				<p className='text-center text-white'>Send a message to start the conversation</p>
+			)}
 		</div>
 	);
 };

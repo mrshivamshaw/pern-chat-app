@@ -1,20 +1,20 @@
 import { Send } from "lucide-react";
 import { useState } from "react";
-import useSendMessageHook from "../../hook/useSendMessageHook";
+import useSendMessage from "../../hooks/useSendMessage";
 
 const MessageInput = () => {
 	const [message, setMessage] = useState("");
-	const {sendMessage,loading} = useSendMessageHook()
-	const messageSendHandler = async(e: React.FormEvent<HTMLFormElement>) => {
+
+	const { loading, sendMessage } = useSendMessage();
+
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		// console.log(message);
-		if(message === "") return;
-		
+		if (!message.trim()) return;
 		await sendMessage(message);
 		setMessage("");
-	}
+	};
 	return (
-		<form onSubmit={messageSendHandler} className='px-4 mb-3 '>
+		<form className='px-4 mb-3' onSubmit={handleSubmit}>
 			<div className='w-full relative'>
 				<input
 					type='text'
@@ -24,9 +24,7 @@ const MessageInput = () => {
 					onChange={(e) => setMessage(e.target.value)}
 				/>
 				<button type='submit' className='absolute inset-y-0 end-0 flex items-center pe-3'>
-					{
-						loading ? <span className="loading loading-spinner"/> : <Send className='w-6 h-6 text-white' />
-					}
+					{loading ? <span className='loading loading-spinner' /> : <Send className='w-6 h-6 text-white' />}
 				</button>
 			</div>
 		</form>

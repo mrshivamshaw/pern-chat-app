@@ -1,30 +1,8 @@
-import axios from "axios";
 import { LogOut } from "lucide-react";
-import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
-import { useAuthContext } from "../../context/AuthContext";
-import useConversationStore from "../../zustand/useConversation";
+import useLogout from "../../hooks/useLogout";
 
 const LogoutButton = () => {
-	const navigate = useNavigate();
-	const {setAuthUser} = useAuthContext();
-	const {setMessages, setSelectedConversation} = useConversationStore()
-	const logout = async() => {
-		try {
-			const res = await axios.get("/api/auth/logout")
-			if(!res?.data?.success){
-				toast.error(res?.data?.message);
-				return
-			}
-			toast.success(res?.data?.message);
-			setAuthUser(null);
-			setMessages([]);
-			setSelectedConversation(null);
-			navigate("/login");
-		} catch (error) {
-			
-		}
-	};
+	const { logout } = useLogout();
 
 	return (
 		<div className='mt-auto'>

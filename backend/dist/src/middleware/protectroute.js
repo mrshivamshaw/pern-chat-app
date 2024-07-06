@@ -1,45 +1,28 @@
 import jwt from "jsonwebtoken";
-import { prisma } from "../db/prisma.js";
-export const protectroute = async (req, res, next) => {
+import prisma from "../db/prisma.js";
+const protectRoute = async (req, res, next) => {
     try {
         const token = req.cookies.jwt;
-        // console.log(token);
         if (!token) {
-            return res.status(401).json({
-                message: "Unauthorized - No token found",
-                success: false
-            });
+            return res.status(401).json({ error: "Unauthorized - No token provided" });
         }
-        const decode = jwt.verify(token, process.env.JWT_SECRET);
-        if (!decode) {
-            return res.status(401).json({
-                message: "Unauthorized - Invalid token",
-                success: false
-            });
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        if (!decoded) {
+            return res.status(401).json({ error: "Unauthorized - Invalid Token" });
         }
-        // console.log(decode);
         const user = await prisma.user.findUnique({
-            where: {
-                id: decode.userId
-            },
-            select: {
-                id: true,
-                username: true,
-                profilepic: true,
-                firstname: true,
-                lastname: true
-            }
+            where: { id: decoded.userId },
+            select: { id: true, username: true, fullName: true, profilePic: true },
         });
         if (!user) {
-            return res.status(401).json({
-                message: "Unauthorized - User not found",
-                success: false
-            });
+            return res.status(404).json({ error: "User not found" });
         }
-        // console.log(user);
         req.user = user;
         next();
     }
     catch (error) {
+        console.log("Error in protectRoute middleware", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
     }
 };
+export default protectRoute;
