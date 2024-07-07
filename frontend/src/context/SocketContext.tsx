@@ -17,7 +17,7 @@ export const useSocketContext = (): ISocketContext => {
 	return context;
 };
 
-const socketURL = import.meta.env.VITE_MODE === "development" ? "http://localhost:5000" : "https://pern-chat-app-3v4h.onrender.com";
+const socketURL = import.meta.env.VITE_MODE === "development" ? "http://localhost:5000" : import.meta.env.VITE_DEPOLOYED_URL;
 
 const SocketContextProvider = ({ children }: { children: ReactNode }) => {
 	const socketRef = useRef<Socket | null>(null);
