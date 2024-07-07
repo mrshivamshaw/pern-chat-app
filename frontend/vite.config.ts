@@ -7,7 +7,7 @@ export default defineConfig({
 	server: {
 		proxy: {
 			"/api": {
-				target: "https://pern-chat-app-3v4h.onrender.com",
+				target: "http://localhost:5000",
 			},
 		},
 	},

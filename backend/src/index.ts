@@ -15,7 +15,7 @@ const __dirname = path.resolve();
 app.use(cookieParser()); // for parsing cookies
 app.use(express.json()); // for parsing application/json
 app.use(cors({
-    origin: ["https://pern-chat-app.vercel.app", "http://localhost:5173"], // Adjust the origins as necessary
+    origin: ["http://localhost:5173"], // Adjust the origins as necessary
     credentials: true
 }));
 

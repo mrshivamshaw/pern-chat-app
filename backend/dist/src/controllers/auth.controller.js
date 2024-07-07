@@ -5,14 +5,20 @@ export const signup = async (req, res) => {
     try {
         const { fullName, username, password, confirmPassword, gender } = req.body;
         if (!fullName || !username || !password || !confirmPassword || !gender) {
-            return res.status(400).json({ message: "Please fill in all fields", success: false });
+            return res
+                .status(400)
+                .json({ message: "Please fill in all fields", success: false });
         }
         if (password !== confirmPassword) {
-            return res.status(400).json({ message: "Passwords don't match", success: false });
+            return res
+                .status(400)
+                .json({ message: "Passwords don't match", success: false });
         }
         const user = await prisma.user.findUnique({ where: { username } });
         if (user) {
-            return res.status(400).json({ message: "Username already exists", success: false });
+            return res
+                .status(400)
+                .json({ message: "Username already exists", success: false });
         }
         const salt = await bcryptjs.genSalt(10);
         const hashedPassword = await bcryptjs.hash(password, salt);
@@ -39,7 +45,9 @@ export const signup = async (req, res) => {
             });
         }
         else {
-            return res.status(400).json({ message: "Invalid user data", success: false });
+            return res
+                .status(400)
+                .json({ message: "Invalid user data", success: false });
         }
     }
     catch (error) {
@@ -52,18 +60,24 @@ export const login = async (req, res) => {
         const { username, password } = req.body;
         const user = await prisma.user.findUnique({ where: { username } });
         if (!user) {
-            return res.status(400).json({ message: "Invalid credentials", success: false });
+            return res
+                .status(400)
+                .json({ message: "Invalid credentials", success: false });
         }
         const isPasswordCorrect = await bcryptjs.compare(password, user.password);
         if (!isPasswordCorrect) {
-            return res.status(400).json({ message: "Invalid credentials", success: false });
+            console.log("Wrong password");
+            return res
+                .status(400)
+                .json({ message: "Invalid credentials", success: false });
         }
-        generateToken(user.id, res);
+        const userId = user.id;
+        generateToken(userId, res);
         user.password = "";
         return res.status(200).json({
             message: "Logged in successfully",
             success: true,
-            user: user
+            user: user,
         });
     }
     catch (error) {
@@ -74,18 +88,20 @@ export const login = async (req, res) => {
 export const logout = async (req, res) => {
     try {
         res.cookie("jwt", "", { maxAge: 0 });
-        res.status(200).json({ message: "Logged out successfully" });
+        res.status(200).json({ message: "Logged out successfully", success: true });
     }
     catch (error) {
         console.log("Error in logout controller", error.message);
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(500).json({ message: error.message, success: false });
     }
 };
 export const getMe = async (req, res) => {
     try {
         const user = await prisma.user.findUnique({ where: { id: req.user.id } });
         if (!user) {
-            return res.status(404).json({ message: "User not found", success: false });
+            return res
+                .status(404)
+                .json({ message: "User not found", success: false });
         }
         user.password = "";
         res.status(200).json({

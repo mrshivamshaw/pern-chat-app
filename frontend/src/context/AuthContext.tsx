@@ -1,3 +1,4 @@
+import axios from "axios";
 import { Dispatch, ReactNode, SetStateAction, createContext, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -32,15 +33,15 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 	useEffect(() => {
 		const fetchAuthUser = async () => {
 			try {
-				const res = await fetch("/api/auth/me");
-				const data = await res.json();
-				if (!res.ok) {
-					throw new Error(data.error);
+				const res = await axios.get("/api/auth/me");
+				if(!res?.data?.success){
+					toast.error(res.data.message);
+					console.log(res.data.message);
 				}
-				setAuthUser(data);
+				else setAuthUser(res?.data?.user);
 			} catch (error: any) {
-				console.error(error);
-				toast.error(error.message);
+				console.log(error?.res?.data?.message || error.message);
+				toast.error(error?.res?.data?.message || error.message);
 			} finally {
 				setIsLoading(false);
 			}

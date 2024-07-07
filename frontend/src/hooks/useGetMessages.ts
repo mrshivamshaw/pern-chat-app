@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import useConversation from "../zustand/useConversation";
 import toast from "react-hot-toast";
+import axios from "axios";
 
 const useGetMessages = () => {
 	const [loading, setLoading] = useState(false);
@@ -12,12 +13,16 @@ const useGetMessages = () => {
 			setLoading(true);
 			setMessages([]);
 			try {
-				const res = await fetch(`/api/messages/${selectedConversation.id}`);
-				const data = await res.json();
-				if (!res.ok) throw new Error(data.error || "An error occurred");
-				setMessages(data);
+				const res = await axios.get(`/api/messages/${selectedConversation.id}`);
+				if(!res?.data?.success){
+					res?.data?.message === "Conversation not found" && toast.error(res?.data?.message);
+					console.log(res?.data?.message);
+					return
+				}
+				setMessages(res?.data?.conversation)
 			} catch (error: any) {
-				toast.error(error.message);
+				toast.error(error?.res?.data?.message);
+				console.log(error?.res?.data?.message);
 			} finally {
 				setLoading(false);
 			}

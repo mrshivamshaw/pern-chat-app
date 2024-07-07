@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "axios": "^1.7.2",
     "lucide-react": "^0.379.0",
     "pern-chat-app": "file:..",
     "react": "^18.2.0",

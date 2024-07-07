@@ -1,6 +1,7 @@
 import { useState } from "react";
 import useConversation from "../zustand/useConversation";
 import toast from "react-hot-toast";
+import axios from "axios";
 
 const useSendMessage = () => {
 	const [loading, setLoading] = useState(false);
@@ -10,19 +11,20 @@ const useSendMessage = () => {
 		if (!selectedConversation) return;
 		setLoading(true);
 		try {
-			const res = await fetch(`/api/messages/send/${selectedConversation.id}`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({ message }),
+			const res = await axios.post(`/api/messages/send/${selectedConversation.id}`, {
+				message,
 			});
-			const data = await res.json();
-			if (data.error) throw new Error(data.error);
 
-			setMessages([...messages, data]);
+			if(!res?.data?.success){
+				toast.error(res?.data?.message);
+				console.log(res?.data?.message);
+				return
+			}
+			setMessages([...messages, res?.data?.newMessage]);
 		} catch (error: any) {
-			toast.error(error.message);
+			toast.error(error?.res?.data?.message);
+			console.log(error?.res?.data?.message);
+			
 		} finally {
 			setLoading(false);
 		}

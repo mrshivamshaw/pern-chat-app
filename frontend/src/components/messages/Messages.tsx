@@ -3,6 +3,7 @@ import useGetMessages from "../../hooks/useGetMessages";
 import useListenMessages from "../../hooks/useListenMessages";
 import MessageSkeleton from "../skeletons/MessageSkeleton";
 import Message from "./Message";
+import boyHello from '../../assets/hellji-removebg-preview.png'
 
 const Messages = () => {
 	const { loading, messages } = useGetMessages();
@@ -17,7 +18,9 @@ const Messages = () => {
 			{!loading && messages.map((message) => <Message key={message.id} message={message} />)}
 
 			{!loading && messages.length === 0 && (
-				<p className='text-center text-white'>Send a message to start the conversation</p>
+				<p className='text-center text-white flex items-center justify-center h-full w-full'>{
+					<img className="h-[30vh]" src={boyHello} alt="boyHello" />
+				}</p>
 			)}
 		</div>
 	);

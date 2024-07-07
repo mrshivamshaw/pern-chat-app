@@ -127,7 +127,13 @@ export const getUsersForSidebar = async (req: Request, res: Response) => {
 			},
 		});
 
-		res.status(200).json(users);
+		if(!users){
+			return res
+				.status(404)
+				.json({ message: "Users not found", success: false });
+		}
+
+		res.status(200).json({users, success: true});
 	} catch (error: any) {
 		console.error("Error in getUsersForSidebar: ", error.message);
 		return res.status(500).json({ message: error.message, success: false });

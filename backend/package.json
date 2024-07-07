@@ -4,7 +4,7 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"dev": "nodemon --watch backend/src --exec ts-node src/index.ts",
+		"dev": "ts-node src/index.ts",
 		"build": "tsc && npm install && prisma generate --schema=prisma/schema.prisma ",
 		"start": "node dist/src/index.js"
 	},
@@ -19,7 +19,7 @@
 		"@types/jsonwebtoken": "^9.0.6",
 		"nodemon": "^3.1.0",
 		"ts-node": "^10.9.2",
-		"typescript": "^5.4.5"
+		"typescript": "^5.5.3"
 	},
 	"dependencies": {
 		"@prisma/client": "^5.16.1",
