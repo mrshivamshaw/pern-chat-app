@@ -10,10 +10,11 @@ const useGetConversations = () => {
 		const getConversations = async () => {
 			setLoading(true);
 			try {
-				const res = await axios.get("/api/messages/conversations");
+				const res = await axios.get(import.meta.env.VITE_API_URL+"/api/messages/conversations",{
+					withCredentials: true});
 				
 				if(!res?.data?.success){
-					
+
 					toast.error(res?.data?.message);
 					throw new Error(res?.data?.message);
 				}

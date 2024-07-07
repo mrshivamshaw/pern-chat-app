@@ -11,8 +11,10 @@ const useSendMessage = () => {
 		if (!selectedConversation) return;
 		setLoading(true);
 		try {
-			const res = await axios.post(`/api/messages/send/${selectedConversation.id}`, {
+			const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/messages/send/${selectedConversation.id}`, {
 				message,
+			},{
+				withCredentials: true
 			});
 
 			if(!res?.data?.success){

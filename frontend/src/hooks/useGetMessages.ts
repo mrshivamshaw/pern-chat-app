@@ -13,7 +13,9 @@ const useGetMessages = () => {
 			setLoading(true);
 			setMessages([]);
 			try {
-				const res = await axios.get(`/api/messages/${selectedConversation.id}`);
+				const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/messages/${selectedConversation.id}`,{
+					withCredentials: true
+				});
 				if(!res?.data?.success){
 					res?.data?.message === "Conversation not found" && toast.error(res?.data?.message);
 					console.log(res?.data?.message);

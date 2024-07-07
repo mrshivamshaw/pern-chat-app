@@ -12,7 +12,9 @@ const useLogout = () => {
 	const logout = async () => {
 		setLoading(true);
 		try {
-			const res = await axios.post("/api/auth/logout", {});
+			const res = await axios.post(import.meta.env.VITE_API_URL+"/api/auth/logout", {},{
+				withCredentials: true
+			});
 			if (!res?.data?.success) {
 				toast.error(res?.data?.message);
 				console.log(res?.data?.message);

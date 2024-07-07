@@ -19,7 +19,9 @@ const useSignup = () => {
 		const toastId = toast.loading("Creating account...");
 		try {
 			setLoading(true);
-			const res = await axios.post("/api/auth/signup", {...inputs});
+			const res = await axios.post(import.meta.env.VITE_API_URL+"/api/auth/signup", {...inputs},{
+				withCredentials: true
+			});
 			console.log(res);
 			
 			if(!res?.data?.success){
