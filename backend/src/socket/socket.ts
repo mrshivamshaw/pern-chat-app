@@ -7,7 +7,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
 	cors: {
-		origin: [ "https://pern-chat-app.vercel.app"],
+		origin: [ "https://pern-chat-app.vercel.app", "http://localhost:3000" ],
 		methods: ["GET", "POST"],
 	},
 });
