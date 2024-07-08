@@ -1,7 +1,22 @@
-import prisma from "../db/prisma.js";
-import bcryptjs from "bcryptjs";
-import generateToken from "../utils/generateToken.js";
-export const signup = async (req, res) => {
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getMe = exports.logout = exports.login = exports.signup = void 0;
+const prisma_js_1 = __importDefault(require("../db/prisma.js"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const generateToken_js_1 = __importDefault(require("../utils/generateToken.js"));
+const signup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { fullName, username, password, confirmPassword, gender } = req.body;
         if (!fullName || !username || !password || !confirmPassword || !gender) {
@@ -14,18 +29,18 @@ export const signup = async (req, res) => {
                 .status(400)
                 .json({ message: "Passwords don't match", success: false });
         }
-        const user = await prisma.user.findUnique({ where: { username } });
+        const user = yield prisma_js_1.default.user.findUnique({ where: { username } });
         if (user) {
             return res
                 .status(400)
                 .json({ message: "Username already exists", success: false });
         }
-        const salt = await bcryptjs.genSalt(10);
-        const hashedPassword = await bcryptjs.hash(password, salt);
+        const salt = yield bcryptjs_1.default.genSalt(10);
+        const hashedPassword = yield bcryptjs_1.default.hash(password, salt);
         // https://avatar-placeholder.iran.liara.run/
         const boyProfilePic = `https://avatar.iran.liara.run/public/boy?username=${username}`;
         const girlProfilePic = `https://avatar.iran.liara.run/public/girl?username=${username}`;
-        const newUser = await prisma.user.create({
+        const newUser = yield prisma_js_1.default.user.create({
             data: {
                 fullName,
                 username,
@@ -36,7 +51,7 @@ export const signup = async (req, res) => {
         });
         if (newUser) {
             // generate token in a sec
-            generateToken(newUser.id, res);
+            (0, generateToken_js_1.default)(newUser.id, res);
             newUser.password = "";
             res.status(201).json({
                 message: "User created successfully",
@@ -54,17 +69,18 @@ export const signup = async (req, res) => {
         console.log("Error in signup controller", error.message);
         res.status(500).json({ message: error.message, success: false });
     }
-};
-export const login = async (req, res) => {
+});
+exports.signup = signup;
+const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { username, password } = req.body;
-        const user = await prisma.user.findUnique({ where: { username } });
+        const user = yield prisma_js_1.default.user.findUnique({ where: { username } });
         if (!user) {
             return res
                 .status(400)
                 .json({ message: "Invalid credentials", success: false });
         }
-        const isPasswordCorrect = await bcryptjs.compare(password, user.password);
+        const isPasswordCorrect = yield bcryptjs_1.default.compare(password, user.password);
         if (!isPasswordCorrect) {
             console.log("Wrong password");
             return res
@@ -72,7 +88,7 @@ export const login = async (req, res) => {
                 .json({ message: "Invalid credentials", success: false });
         }
         const userId = user.id;
-        generateToken(userId, res);
+        (0, generateToken_js_1.default)(userId, res);
         user.password = "";
         return res.status(200).json({
             message: "Logged in successfully",
@@ -84,8 +100,9 @@ export const login = async (req, res) => {
         console.log("Error in login controller", error.message);
         return res.status(500).json({ message: error.message, success: false });
     }
-};
-export const logout = async (req, res) => {
+});
+exports.login = login;
+const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         res.cookie("jwt", "", { maxAge: 0 });
         res.status(200).json({ message: "Logged out successfully", success: true });
@@ -94,10 +111,11 @@ export const logout = async (req, res) => {
         console.log("Error in logout controller", error.message);
         res.status(500).json({ message: error.message, success: false });
     }
-};
-export const getMe = async (req, res) => {
+});
+exports.logout = logout;
+const getMe = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const user = await prisma.user.findUnique({ where: { id: req.user.id } });
+        const user = yield prisma_js_1.default.user.findUnique({ where: { id: req.user.id } });
         if (!user) {
             return res
                 .status(404)
@@ -114,4 +132,5 @@ export const getMe = async (req, res) => {
         console.log("Error in getMe controller", error.message);
         res.status(500).json({ message: "Internal Server Error", success: false });
     }
-};
+});
+exports.getMe = getMe;
