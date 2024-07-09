@@ -11,7 +11,7 @@ const Sidebar = () => {
 
 	return (
 		<>
-		<div className={` w-44 md:w-1/2 ${open ? "block" : "hidden"} md:block lg:block xl:block`}>
+		<div className={` w-44 md:w-1/2 ${open ? "block" : "hidden"} md:block lg:block xl:block`}	>
 			<div className='border-r border-slate-500 p-1 md:p-4 flex flex-col'>
 					{open && <RxCross1 onClick={() => setOpen(!open)} className="block md:hidden lg:hidden xl:hidden text-xl my-1 text-black/80 "/>}
 					<SearchInput />
