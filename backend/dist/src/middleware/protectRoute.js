@@ -1,5 +1,10 @@
-import jwt from "jsonwebtoken";
-import prisma from "../db/prisma.js";
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const prisma_js_1 = __importDefault(require("../db/prisma.js"));
 const protectRoute = async (req, res, next) => {
     try {
         const token = req.cookies.jwt;
@@ -7,11 +12,11 @@ const protectRoute = async (req, res, next) => {
         if (!token) {
             return res.status(401).json({ message: "Unauthorized - No token provided", success: false });
         }
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
         if (!decoded) {
             return res.status(401).json({ message: "Unauthorized - Invalid Token", success: false });
         }
-        const user = await prisma.user.findUnique({
+        const user = await prisma_js_1.default.user.findUnique({
             where: { id: decoded.userId },
             select: { id: true, username: true, fullName: true, profilePic: true },
         });
@@ -26,4 +31,4 @@ const protectRoute = async (req, res, next) => {
         res.status(500).json({ message: "Internal Server Error", success: false });
     }
 };
-export default protectRoute;
+exports.default = protectRoute;
