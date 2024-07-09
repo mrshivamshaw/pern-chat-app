@@ -5,7 +5,7 @@ import Conversation from "./Conversation";
 const Conversations = () => {
 	const { conversations, loading } = useGetConversations();
 	return (
-		<div className='py-2 overflow-y-auto'>
+		<div className='py-2 overflow-auto h-[50vh]'>
 			{conversations.map((conversation) => (
 				<Conversation key={conversation.id} conversation={conversation} emoji={getRandomEmoji()} />
 			))}
