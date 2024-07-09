@@ -1,17 +1,11 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUsersForSidebar = exports.getMessages = exports.sendMessage = void 0;
-const prisma_js_1 = __importDefault(require("../db/prisma.js"));
-const socket_js_1 = require("../socket/socket.js");
-const sendMessage = async (req, res) => {
+import prisma from "../db/prisma.js";
+import { getReceiverSocketId, io } from "../socket/socket.js";
+export const sendMessage = async (req, res) => {
     try {
         const { message } = req.body;
         const { id: receiverId } = req.params;
         const senderId = req.user.id;
-        let conversation = await prisma_js_1.default.conversation.findFirst({
+        let conversation = await prisma.conversation.findFirst({
             where: {
                 participantIds: {
                     hasEvery: [senderId, receiverId],
@@ -20,7 +14,7 @@ const sendMessage = async (req, res) => {
         });
         // the very first message is being sent, that's why we need to create a new conversation
         if (!conversation) {
-            conversation = await prisma_js_1.default.conversation.create({
+            conversation = await prisma.conversation.create({
                 data: {
                     participantIds: {
                         set: [senderId, receiverId],
@@ -28,7 +22,7 @@ const sendMessage = async (req, res) => {
                 },
             });
         }
-        const newMessage = await prisma_js_1.default.message.create({
+        const newMessage = await prisma.message.create({
             data: {
                 senderId,
                 body: message,
@@ -36,7 +30,7 @@ const sendMessage = async (req, res) => {
             },
         });
         if (newMessage) {
-            conversation = await prisma_js_1.default.conversation.update({
+            conversation = await prisma.conversation.update({
                 where: {
                     id: conversation.id,
                 },
@@ -53,9 +47,9 @@ const sendMessage = async (req, res) => {
             });
         }
         // Socket io will go here
-        const receiverSocketId = (0, socket_js_1.getReceiverSocketId)(receiverId);
+        const receiverSocketId = getReceiverSocketId(receiverId);
         if (receiverSocketId) {
-            socket_js_1.io.to(receiverSocketId).emit("newMessage", newMessage);
+            io.to(receiverSocketId).emit("newMessage", newMessage);
         }
         return res.status(201).json({
             message: "Message sent successfully",
@@ -68,12 +62,11 @@ const sendMessage = async (req, res) => {
         return res.status(500).json({ message: error.message, success: false });
     }
 };
-exports.sendMessage = sendMessage;
-const getMessages = async (req, res) => {
+export const getMessages = async (req, res) => {
     try {
         const { id: userToChatId } = req.params;
         const senderId = req.user.id;
-        const conversation = await prisma_js_1.default.conversation.findFirst({
+        const conversation = await prisma.conversation.findFirst({
             where: {
                 participantIds: {
                     hasEvery: [senderId, userToChatId],
@@ -105,11 +98,10 @@ const getMessages = async (req, res) => {
         return res.status(500).json({ message: error.message, success: false });
     }
 };
-exports.getMessages = getMessages;
-const getUsersForSidebar = async (req, res) => {
+export const getUsersForSidebar = async (req, res) => {
     try {
         const authUserId = req.user.id;
-        const users = await prisma_js_1.default.user.findMany({
+        const users = await prisma.user.findMany({
             where: {
                 id: {
                     not: authUserId,
@@ -133,4 +125,3 @@ const getUsersForSidebar = async (req, res) => {
         return res.status(500).json({ message: error.message, success: false });
     }
 };
-exports.getUsersForSidebar = getUsersForSidebar;

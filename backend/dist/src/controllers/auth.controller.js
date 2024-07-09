@@ -1,13 +1,7 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getMe = exports.logout = exports.login = exports.signup = void 0;
-const prisma_js_1 = __importDefault(require("../db/prisma.js"));
-const bcryptjs_1 = __importDefault(require("bcryptjs"));
-const generateToken_js_1 = __importDefault(require("../utils/generateToken.js"));
-const signup = async (req, res) => {
+import prisma from "../db/prisma.js";
+import bcryptjs from "bcryptjs";
+import generateToken from "../utils/generateToken.js";
+export const signup = async (req, res) => {
     try {
         const { fullName, username, password, confirmPassword, gender } = req.body;
         if (!fullName || !username || !password || !confirmPassword || !gender) {
@@ -20,18 +14,18 @@ const signup = async (req, res) => {
                 .status(400)
                 .json({ message: "Passwords don't match", success: false });
         }
-        const user = await prisma_js_1.default.user.findUnique({ where: { username } });
+        const user = await prisma.user.findUnique({ where: { username } });
         if (user) {
             return res
                 .status(400)
                 .json({ message: "Username already exists", success: false });
         }
-        const salt = await bcryptjs_1.default.genSalt(10);
-        const hashedPassword = await bcryptjs_1.default.hash(password, salt);
+        const salt = await bcryptjs.genSalt(10);
+        const hashedPassword = await bcryptjs.hash(password, salt);
         // https://avatar-placeholder.iran.liara.run/
         const boyProfilePic = `https://avatar.iran.liara.run/public/boy?username=${username}`;
         const girlProfilePic = `https://avatar.iran.liara.run/public/girl?username=${username}`;
-        const newUser = await prisma_js_1.default.user.create({
+        const newUser = await prisma.user.create({
             data: {
                 fullName,
                 username,
@@ -42,7 +36,7 @@ const signup = async (req, res) => {
         });
         if (newUser) {
             // generate token in a sec
-            (0, generateToken_js_1.default)(newUser.id, res);
+            generateToken(newUser.id, res);
             newUser.password = "";
             res.status(201).json({
                 message: "User created successfully",
@@ -61,17 +55,16 @@ const signup = async (req, res) => {
         res.status(500).json({ message: error.message, success: false });
     }
 };
-exports.signup = signup;
-const login = async (req, res) => {
+export const login = async (req, res) => {
     try {
         const { username, password } = req.body;
-        const user = await prisma_js_1.default.user.findUnique({ where: { username } });
+        const user = await prisma.user.findUnique({ where: { username } });
         if (!user) {
             return res
                 .status(400)
                 .json({ message: "Invalid credentials", success: false });
         }
-        const isPasswordCorrect = await bcryptjs_1.default.compare(password, user.password);
+        const isPasswordCorrect = await bcryptjs.compare(password, user.password);
         if (!isPasswordCorrect) {
             console.log("Wrong password");
             return res
@@ -79,7 +72,7 @@ const login = async (req, res) => {
                 .json({ message: "Invalid credentials", success: false });
         }
         const userId = user.id;
-        (0, generateToken_js_1.default)(userId, res);
+        generateToken(userId, res);
         user.password = "";
         return res.status(200).json({
             message: "Logged in successfully",
@@ -92,8 +85,7 @@ const login = async (req, res) => {
         return res.status(500).json({ message: error.message, success: false });
     }
 };
-exports.login = login;
-const logout = async (req, res) => {
+export const logout = async (req, res) => {
     try {
         res.cookie("jwt", "", { maxAge: 0 });
         res.status(200).json({ message: "Logged out successfully", success: true });
@@ -103,10 +95,9 @@ const logout = async (req, res) => {
         res.status(500).json({ message: error.message, success: false });
     }
 };
-exports.logout = logout;
-const getMe = async (req, res) => {
+export const getMe = async (req, res) => {
     try {
-        const user = await prisma_js_1.default.user.findUnique({ where: { id: req.user.id } });
+        const user = await prisma.user.findUnique({ where: { id: req.user.id } });
         if (!user) {
             return res
                 .status(404)
@@ -124,4 +115,3 @@ const getMe = async (req, res) => {
         res.status(500).json({ message: "Internal Server Error", success: false });
     }
 };
-exports.getMe = getMe;
