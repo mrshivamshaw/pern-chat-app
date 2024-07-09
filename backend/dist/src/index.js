@@ -12,7 +12,7 @@ const __dirname = path.resolve();
 app.use(cookieParser()); // for parsing cookies
 app.use(express.json()); // for parsing application/json
 app.use(cors({
-    origin: ["https://pern-chat-app.vercel.app/"], // Adjust the origins as necessary
+    origin: ["https://pern-chat-app.vercel.app", "http://localhost:5713"], // Adjust the origins as necessary
     credentials: true
 }));
 app.use("/api/auth", authRoutes);

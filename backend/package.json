@@ -4,7 +4,7 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"dev": "nodemon --watch src --exec ts-node src/index.ts",
+		"dev": "ts-node src/index.ts",
 		"build": "tsc && npm install && prisma generate --schema=prisma/schema.prisma ",
 		"start": "node dist/src/index.js"
 	},
