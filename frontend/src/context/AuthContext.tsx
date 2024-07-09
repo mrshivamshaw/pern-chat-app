@@ -37,8 +37,8 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 					withCredentials: true
 				});
 				if(!res?.data?.success){
-					toast.error(res.data.message);
-					console.log(res.data.message);
+					toast.error(res?.data?.message);
+					console.log(res?.data?.message);
 				}
 				else setAuthUser(res?.data?.user);
 			} catch (error: any) {

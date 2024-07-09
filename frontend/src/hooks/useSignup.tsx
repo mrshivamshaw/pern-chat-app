@@ -22,7 +22,7 @@ const useSignup = () => {
 			const res = await axios.post(import.meta.env.VITE_API_URL+"/api/auth/signup", {...inputs},{
 				withCredentials: true
 			});
-			console.log(res);
+			// console.log(res);
 			
 			if(!res?.data?.success){
 				toast.dismiss(toastId);

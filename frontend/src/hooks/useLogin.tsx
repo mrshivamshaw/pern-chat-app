@@ -30,7 +30,7 @@ const useLogin = () => {
 
 			else{
 				setAuthUser(res?.data?.user);
-				console.log(res?.data?.user);
+				// console.log(res?.data?.user);
 				toast.dismiss(toastId);
 				toast.success("Successfully logged in");
 			}
