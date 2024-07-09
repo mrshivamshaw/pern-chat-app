@@ -24,8 +24,8 @@ const useSendMessage = () => {
 			}
 			setMessages([...messages, res?.data?.newMessage]);
 		} catch (error: any) {
-			toast.error(error?.res?.data?.message);
-			console.log(error?.res?.data?.message);
+			toast.error(error?.response?.data?.message);
+			console.log(error?.response?.data?.message);
 			
 		} finally {
 			setLoading(false);

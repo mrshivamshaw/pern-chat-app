@@ -33,7 +33,7 @@ const SocketContextProvider = ({ children }: { children: ReactNode }) => {
 				},
 			});
 			socketRef.current = socket;
-			console.log("socket connected", authUser.id);
+			// console.log("socket connected", authUser.id);
 			
 			socket.on("getOnlineUsers", (users: string[]) => {
 				setOnlineUsers(users);

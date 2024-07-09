@@ -42,8 +42,8 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 				}
 				else setAuthUser(res?.data?.user);
 			} catch (error: any) {
-				console.log(error?.res?.data?.message || error.message);
-				toast.error(error?.res?.data?.message || error.message);
+				console.log(error?.response?.data?.message || error.message);
+				toast.error(error?.response?.data?.message || error.message);
 			} finally {
 				setIsLoading(false);
 			}

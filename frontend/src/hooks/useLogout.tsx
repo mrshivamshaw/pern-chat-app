@@ -22,9 +22,10 @@ const useLogout = () => {
 			}
 			setSelectedConversation(null)
 			setAuthUser(null);
+			toast.success("Successfully logged out");
 		} catch (error: any) {
-			console.error(error?.res?.data?.message || error.message);
-			toast.error(error?.res?.data?.message || error.message);
+			console.error(error?.response?.data?.message || error.message);
+			toast.error(error?.response?.data?.message || error.message);
 		} finally {
 			setLoading(false);
 		}

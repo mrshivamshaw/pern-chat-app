@@ -19,7 +19,7 @@ const useLogin = () => {
 			},{
 				withCredentials: true
 			})
-
+			
 
 			if(!res?.data?.success){
 				toast.dismiss(toastId);
@@ -36,8 +36,8 @@ const useLogin = () => {
 			}
 		} catch (error: any) {
 			toast.dismiss(toastId);
-			toast.error(error?.res?.data?.message);
-			console.error(error?.res?.data?.message);
+			toast.error(error?.response?.data?.message);
+			console.error(error?.response?.data?.message);
 		} finally {
 			setLoading(false);
 		}
